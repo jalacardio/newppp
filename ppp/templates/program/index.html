@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load vocabulary_program_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% for program in programs %}
+        <div class="col-lg-4 col-sm-12">
+            <div class="card">
+                <img class="card-img-top" src="https://eshop.lttc.org.tw/chfl1/Store/bImages/b_b2000090001.png"
+                     alt="{{ program.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ program.alias }}</h5>
+                    <p class="card-text">{{ program.description }}</p>
+                    {% if user.is_authenticated and user.id|is_enrolled:program.id %}
+                        <a href="{%url 'program:dashboard' program_id=program.id %}">Continue</a>
+                    {% else %}
+                        <form action="{% url 'program:enroll' program.id %}" method="post">
+                            {% csrf_token %}
+                            <input class="btn btn-primary" type="submit" value="Enroll Now">
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock  %}

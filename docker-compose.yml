@@ -1,0 +1,39 @@
+version: '3.5'
+services:
+    db:
+      image: mariadb
+      restart: always
+      command: ['--character-set-server=utf8', '--collation-server=utf8_unicode_ci', '--max-connections=10000']
+      environment:
+        MYSQL_DATABASE: "dev"
+        MYSQL_USER: "admin"
+        MYSQL_PASSWORD: "admin"
+        MYSQL_ROOT_PASSWORD: "admin-root"
+      volumes:
+        - ./data:/data
+      ports:
+        - "3307:3306"
+      networks:
+        - proxy
+
+    web:
+      build: ./ppp
+      image: backend
+      command: sh -c "sleep 5s && python ppp/manage.py runserver 0.0.0.0:8010"
+      restart: always
+      volumes:
+        # - exp_src:/src
+        - .:/pxp_src
+        # (HOST:CONTAINER)
+      ports:
+        - "8090:8010"
+        # (HOST:CONTAINER)
+      depends_on:
+        - db
+      networks:
+        - proxy
+
+networks:
+    proxy:
+      # external:
+        name: ppp_network

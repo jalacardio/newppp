@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <p>
+        {{ vocabulary.rep }}
+    </p>
+    <p>
+        {{ understanding.score }}
+    </p>
+
+    {% if vocab_translation %}
+        <div class="card">
+          <div class="card-body">
+        {% for translation in vocab_translation.translations.all %}
+            <div>
+                {% if not translation.category %}
+                    <h5>
+                        {% for speech in translation.speeches.all %}
+                            <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>
+                        {% endfor %}
+                    </h5>
+
+                    <p>{{ translation.rep }}</p>
+                {% else %}
+<!--                    <h5>-->
+<!--                        <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>-->
+<!--                    </h5>-->
+
+<!--                    <p>{{ translation.rep }}</p>-->
+                {% endif %}
+
+            </div>
+        {% endfor %}
+          </div>
+        </div>
+
+    {% else %}
+        <p>No words are available.</p>
+    {% endif %}
+
+    <div class="btn-group" role="group" aria-label="Understanding">
+        <form action="{% url 'program:up_score' program.id vocabulary.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">I Know</button>
+        </form>
+        <form action="{% url 'program:down_score' program.id vocabulary.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Never Seen Before</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

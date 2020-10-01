@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include "dictionary/search.html" %}
+<div class="container">
+    {% if word %}
+        <h1>{{ word.rep }}</h1>
+        {% if word.phonetic.first %}
+            <h4>KK: [{{ word.phonetic.first.kk }}]</h4>
+        {% endif %}
+        <div class="card">
+          <div class="card-body">
+        {% for translation in word.translations.all %}
+            <div>
+                <h5>
+                    {% for speech in translation.speeches.all %}
+                    <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>
+                {% endfor %}
+                </h5>
+                <h5>
+                    {% if translation.category %}
+                    <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>
+                {% endif %}
+                </h5>
+
+                <p>{{ translation.rep }}</p>
+            </div>
+        {% endfor %}
+          </div>
+        </div>
+
+    {% else %}
+        <p>No words are available.</p>
+    {% endif %}
+</div>
+{% endblock  %}

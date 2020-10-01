@@ -1,0 +1,11 @@
+{% if user.is_authenticated %}
+    <div>
+        <span>
+            Hi, {{ user.username }}
+        </span>
+    </div>
+{% else %}
+    <div>
+        <a href="{%url 'login'%}">Login</a>
+    </div>
+{% endif %}
