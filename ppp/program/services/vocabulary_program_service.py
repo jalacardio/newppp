@@ -6,7 +6,6 @@ from member.models import Member
 
 from django.db.models import Q, Count
 
-
 DEFAULT_LEARNING_CURVE_COUNT = 50
 
 
@@ -33,7 +32,9 @@ class VocabularyProgramService():
         flashcard = FlashCard.objects.filter(vocabulary_program=self.program, member=self.member)
         if flashcard:
             return flashcard.last()
-        return None
+        else:
+            flashcard = self.init_flash_card()
+            return flashcard
 
     def init_flash_card(self):
         flashcard = FlashCard.objects.create(vocabulary_program=self.program, member=self.member)
@@ -41,33 +42,28 @@ class VocabularyProgramService():
         flashcard.vocabularies.add(*rand_vocab_list)
         return flashcard
 
-    def random_vocabularies(self, count):
-        max_id = Vocabulary.objects.filter(vocabulary_list__program=self.program).all().aggregate(max_id=Max("id"))['max_id']
-        valid_vocabs = 0
-        rand_vocab_list = []
+    def random_vocabularies(self, count, new=False):
+        if new:
+            vocab_list = list(self.program.vocabularies.exclude(understandings__score__gt=5).all())
+        else:
+            vocab_list = list(self.program.vocabularies.all())
+        random.shuffle(vocab_list)
 
-        while valid_vocabs < count:
-            pk = random.randint(1, max_id)
-            rand_vocab = Vocabulary.objects.filter(pk=pk).first()
-
-            if rand_vocab:
-                rand_vocab_list.append(rand_vocab)
-                valid_vocabs += 1
+        rand_vocab_list = vocab_list[:count]
 
         return rand_vocab_list
 
-    def get_random_vocabulary_from_flashcard(self, flashcard_id):
-        max_id = Vocabulary.objects.filter(flash_card__id=flashcard_id).all().aggregate(max_id=Max("id"))[
-            'max_id']
-
-        while True:
-            pk = random.randint(1, max_id)
-            vocab = Vocabulary.objects.filter(pk=pk).first()
-
-            if vocab:
-                understanding, created = VocabularyUnderstanding.objects.get_or_create(member=self.member, vocabulary=vocab)
-                translation = self.get_translation(vocab.rep)
-                return vocab, understanding, translation
+    def get_vocabulary_from_flashcard(self, flashcard_id):
+        fc = FlashCard.objects.prefetch_related('vocabularies', 'vocabularies__word',
+                                                'vocabularies__word__translations', 'vocabularies__word__phonetic',
+                                                'vocabularies__word__translations__speeches').get(pk=flashcard_id)
+        vocab_list = list(fc.vocabularies.all())
+        random.shuffle(vocab_list)
+        vocab = vocab_list[0]
+        if vocab:
+            understanding, created = VocabularyUnderstanding.objects.get_or_create(member=self.member,
+                                                                                   vocabulary_id=vocab.id)
+            return vocab, understanding
 
     def get_vocabulary_understanding(self, vocab_id):
         vu = VocabularyUnderstanding.objects.get(member=self.member, vocabulary__id=vocab_id)
@@ -75,21 +71,31 @@ class VocabularyProgramService():
 
     def update_vocabulary_understanding(self, vocab_id, score):
         vu = VocabularyUnderstanding.objects.get(member=self.member, vocabulary__id=vocab_id)
-        vu.score += score
-        if 0 <= vu.score < 6:
+        if score == 'up':
+            if vu.score == 0:
+                vu.score += 5
+            else:
+                vu.score += 1
+        elif score == 'down':
+            if vu.score == 0:
+                vu.score += 1
+            else:
+                vu.score -= 1
+
+        if 1 <= vu.score < 50:
             vu.save()
 
-    def get_translation(self, vocab):
-        vocab_obj = Word.objects.prefetch_related('translations', 'phonetic', 'translations__speeches').get(rep=vocab)
-
-        return vocab_obj
 
     def overall_progress(self):
         # VocabularyUnderstanding.objects.filter(member=self.member, vocabulary__vocabulary_list__program=self.program)
-        learnt = Count('vocabulary_understandings', filter=(Q(vocabulary_understandings__score=5) & Q(vocabulary_understandings__vocabulary__vocabulary_list__program=self.program)))
-        know = Count('vocabulary_understandings', filter=((Q(vocabulary_understandings__score__gt=0) & Q(vocabulary_understandings__score__lte=5)) & Q(vocabulary_understandings__vocabulary__vocabulary_list__program=self.program)))
-        total = self.program.vocabulary_list.vocabularies.count()
-        mem = Member.objects.filter(pk=self.member.pk).annotate(learnt=learnt).annotate(know=know)
-        progress = {'learnt': mem[0].learnt, 'know': mem[0].know, 'total': total}
+        learned = Count('understandings', filter=(
+                (Q(understandings__score__gt=4)) & Q(understandings__vocabulary__vocab_program=self.program)))
+
+        reviewing = Count('understandings', filter=(
+                    (Q(understandings__score__gt=0) & Q(understandings__score__lt=5)) & Q(
+                understandings__vocabulary__vocab_program=self.program)))
+        mem = Member.objects.filter(pk=self.member.pk).annotate(reviewing=reviewing).annotate(learned=learned)
+        total = self.program.vocabularies.count()
+        progress = {'learned': mem[0].learned, 'reviewing': mem[0].reviewing, 'total': total}
         print(progress)
         return progress

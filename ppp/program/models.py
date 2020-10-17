@@ -1,5 +1,16 @@
 from django.db import models
 from member.models import Member
+from dictionary.models import Word
+from django.contrib import admin
+
+
+class VocabularyBank(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    alias = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 
 class VocabularyProgram(models.Model):
@@ -15,37 +26,32 @@ class ProgramEnrollment(models.Model):
     member = models.ForeignKey(
         Member, on_delete=models.CASCADE, null=True, blank=True, related_name='enrollments')
     vocabulary_program = models.ForeignKey(
-        VocabularyProgram, on_delete=models.CASCADE, null=True, blank=True, related_name='vocabulary_programs')
+        VocabularyProgram, on_delete=models.CASCADE, null=True, blank=True, related_name='enrollments')
     enrolled_at = models.DateTimeField(blank=True, null=True)
 
 
-class FlashCard(models.Model):
-    vocabulary_program = models.ForeignKey(
-        VocabularyProgram, on_delete=models.CASCADE, related_name='sub_programs')
-    member = models.ForeignKey(
-        Member, on_delete=models.CASCADE, related_name='sub_programs')
-    created_at = models.DateTimeField(blank=True, null=True)
-
-
-class VocabularyList(models.Model):
-    program = models.OneToOneField(
-        VocabularyProgram, on_delete=models.CASCADE, null=True, blank=True, related_name='vocabulary_list')
-
-
 class Vocabulary(models.Model):
-    rep = models.CharField(max_length=255)
-    translation = models.CharField(max_length=255, null=True, blank=True)
-    vocabulary_list = models.ForeignKey(VocabularyList, on_delete=models.CASCADE, related_name='vocabularies')
-    flash_card = models.ManyToManyField(FlashCard, blank=True,  related_name='vocabularies')
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='vocabularies')
+    bank = models.ForeignKey(VocabularyBank, on_delete=models.CASCADE, related_name='vocabularies')
+    vocab_program = models.ForeignKey(VocabularyProgram, on_delete=models.SET_NULL, null=True, blank=True,
+                                      related_name='vocabularies')
 
     def __str__(self):
-        return "{}".format(self.rep)
+        return "{} - {}".format(self.bank.name, self.word.rep)
 
 
 class VocabularyUnderstanding(models.Model):
     score = models.IntegerField(default=0)
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='vocabulary_understandings')
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='understandings')
     vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE, related_name='understandings')
 
     def __str__(self):
-        return "{} - {} : {}".format(self.member.pk, self.vocabulary.rep, self.score)
+        return "Member:{} - Program:{} - {} : {}".format(self.member.pk, self.vocabulary.vocab_program.pk, self.vocabulary.word.rep, self.score)
+
+
+class FlashCard(models.Model):
+    vocabulary_program = models.ForeignKey(
+        VocabularyProgram, on_delete=models.CASCADE, null=True, blank=True, related_name='flashcards')
+    member = models.ForeignKey(
+        Member, on_delete=models.CASCADE, null=True, blank=True, related_name='flashcards')
+    vocabularies = models.ManyToManyField(Vocabulary, related_name='flashcards')

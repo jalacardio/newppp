@@ -51,15 +51,15 @@ def new_flashcard(request, program_id):
     return render(request, 'program/flashcard.html', context)
 
 
-def continue_flashcard(request, program_id):
+def flashcard(request, program_id):
     current_user = request.user
     service = VocabularyProgramService(program_id, current_user.id)
-    flashcard = service.get_flash_card()
-    vocab, understanding, translation = service.get_random_vocabulary_from_flashcard(flashcard.id)
+    flash_card = service.get_flash_card()
+    vocab, understanding = service.get_vocabulary_from_flashcard(flash_card.id)
     context = {
         'vocabulary': vocab,
         'understanding': understanding,
-        'vocab_translation': translation,
+        'vocab_translation': vocab.word.translations,
         'program': service.program
     }
     return render(request, 'program/flashcard.html', context)
@@ -68,14 +68,14 @@ def continue_flashcard(request, program_id):
 def up_score(request, program_id, vocab_id):
     current_user = request.user
     service = VocabularyProgramService(program_id, current_user.id)
-    service.update_vocabulary_understanding(vocab_id, 1)
+    service.update_vocabulary_understanding(vocab_id, 'up')
 
-    return redirect('program:continue_flashcard', program_id=program_id)
+    return redirect('program:flashcard', program_id=program_id)
 
 
 def down_score(request, program_id, vocab_id):
     current_user = request.user
     service = VocabularyProgramService(program_id, current_user.id)
-    service.update_vocabulary_understanding(vocab_id, -1)
+    service.update_vocabulary_understanding(vocab_id, 'down')
 
-    return redirect('program:continue_flashcard', program_id=program_id)
+    return redirect('program:flashcard', program_id=program_id)

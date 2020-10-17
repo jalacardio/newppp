@@ -4,16 +4,16 @@
 {% block content %}
 <div class="container">
     {% if flashcard %}
-        <a href="{%url 'program:continue_flashcard' program_id=program.id %}">Continue</a>
+        <a href="{%url 'program:flashcard' program_id=program.id %}">Continue</a>
     {% else %}
-        <a href="{%url 'program:new_flashcard' program_id=program.id %}">Start Learning</a>
+        <a href="{%url 'program:flashcard' program_id=program.id %}">Start Learning</a>
     {% endif %}
 
     <p>
-        Learnt {{ current_progress.learnt }} / {{ current_progress.total }}
+        Learned {{ current_progress.learned }} / {{ current_progress.total }}
     </p>
     <p>
-        Know {{ current_progress.know }} / {{ current_progress.total }}
+        Reviewing {{ current_progress.reviewing }} / {{ current_progress.total }}
     </p>
 </div>
 {% endblock %}

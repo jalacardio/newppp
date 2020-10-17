@@ -4,16 +4,22 @@
 {% block content %}
 <div class="container">
     <p>
-        {{ vocabulary.rep }}
+        {{ vocabulary.word.rep }}
     </p>
     <p>
-        {{ understanding.score }}
+        {% if understanding.score >= 5 %}
+            <span class="badge badge-pill badge-success">Learned</span>
+        {% elif understanding.score > 0 %}
+            <span class="badge badge-pill badge-warning">Reviewing</span>
+        {% else %}
+            <span class="badge badge-pill badge-light">New Word</span>
+        {% endif %}
     </p>
 
     {% if vocab_translation %}
         <div class="card">
           <div class="card-body">
-        {% for translation in vocab_translation.translations.all %}
+        {% for translation in vocab_translation.all %}
             <div>
                 {% if not translation.category %}
                     <h5>
