@@ -57,6 +57,7 @@ def flashcard(request, program_id):
     flash_card = service.get_flash_card()
     vocab, understanding = service.get_vocabulary_from_flashcard(flash_card.id)
     context = {
+        'flashcard': flash_card,
         'vocabulary': vocab,
         'understanding': understanding,
         'vocab_translation': vocab.word.translations,

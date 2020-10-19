@@ -55,3 +55,4 @@ class FlashCard(models.Model):
     member = models.ForeignKey(
         Member, on_delete=models.CASCADE, null=True, blank=True, related_name='flashcards')
     vocabularies = models.ManyToManyField(Vocabulary, related_name='flashcards')
+    progress = models.DecimalField(max_digits=4, decimal_places=1)

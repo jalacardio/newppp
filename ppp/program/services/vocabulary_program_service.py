@@ -42,6 +42,12 @@ class VocabularyProgramService():
         flashcard.vocabularies.add(*rand_vocab_list)
         return flashcard
 
+    def refresh_flash_card(self):
+        flashcard = FlashCard.objects.filter(vocabulary_program=self.program, member=self.member)
+        rand_vocab_list = self.random_vocabularies(DEFAULT_LEARNING_CURVE_COUNT, new=True)
+        flashcard.vocabularies.set(*rand_vocab_list, clear=True)
+        return flashcard
+
     def random_vocabularies(self, count, new=False):
         if new:
             vocab_list = list(self.program.vocabularies.exclude(understandings__score__gt=5).all())
@@ -82,9 +88,20 @@ class VocabularyProgramService():
             else:
                 vu.score -= 1
 
-        if 1 <= vu.score < 50:
+        # Update score only when it's in rational range, 1 is identified as "New Word", 5 is identified as "Learned"
+        if 1 <= vu.score < 6:
             vu.save()
+            self.update_flashcard_progress()
 
+    def update_flashcard_progress(self):
+        flashcard = FlashCard.objects.prefetch_related('vocabularies').filter(vocabulary_program=self.program, member=self.member)[0]
+        flashcard_vocabs = flashcard.vocabularies.values_list('id', flat=True)
+        learned = Count('understandings', filter=(
+                (Q(understandings__score__gt=4)) & Q(understandings__vocabulary__in=flashcard_vocabs)))
+        member = Member.objects.prefetch_related('understandings').filter(pk=self.member.pk).annotate(learned=learned)
+        learned = member[0].learned
+        flashcard.progress = (learned / len(flashcard_vocabs)) * 100
+        flashcard.save()
 
     def overall_progress(self):
         # VocabularyUnderstanding.objects.filter(member=self.member, vocabulary__vocabulary_list__program=self.program)
@@ -97,5 +114,4 @@ class VocabularyProgramService():
         mem = Member.objects.filter(pk=self.member.pk).annotate(reviewing=reviewing).annotate(learned=learned)
         total = self.program.vocabularies.count()
         progress = {'learned': mem[0].learned, 'reviewing': mem[0].reviewing, 'total': total}
-        print(progress)
         return progress
