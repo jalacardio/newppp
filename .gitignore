@@ -1,2 +1,4 @@
 *.pyc
 ppp/dictionary/__pycache__/
+
+.idea/
