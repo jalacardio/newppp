@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'program/css/dashboard.css' %}">
+<div class="container">
+    <h3>{{ program.alias }}</h3>
+    <div class="card mb-5">
+        <div class="card-body">
+            <div class="row">
+                <div>
+                    <h4>
+                        Overall Progress
+                    </h4>
+                    <span>
+                         {{ current_progress.percentage|floatformat:"0" }} %
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="chart-container">
+                    <canvas id="progressDonut"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+        {% if flashcard %}
+            <h4>Flashcard</h4>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ flashcard.progress }}%" aria-valuenow="{{ flashcard.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <a href="{%url 'program:flashcard' program_id=program.id %}">
+                <button type="button" class="btn btn-outline-secondary btn-lg btn-block">Continue</button>
+            </a>
+        {% else %}
+            <a href="{%url 'program:flashcard' program_id=program.id %}">
+                <button type="button" class="btn btn-outline-secondary btn-lg btn-block">Create</button>
+            </a>
+        {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'program/js/dashboard.js' %}"></script>
+<script>
+    var learned = {{ current_progress.learned }}
+    var reviewing = {{ current_progress.reviewing }}
+    var total = {{ current_progress.total }}
+
+    var labels = ['Learned', 'Reviewing', 'New']
+    var data = [learned, reviewing, total - (learned + reviewing)]
+    var id = "progressDonut"
+    loadPieChart(id, labels, data)
+
+
+</script>
+{% endblock %}
+

@@ -17,14 +17,11 @@ def index(request):
 
 
 def enroll(request, program_id):
-    current_user = request.user
-    service = VocabularyProgramService(program_id, current_user.id)
-    service.enroll()
-    flashcard = service.get_flash_card()
-    context = {
-        'flashcard': flashcard
-    }
-    return render(request, 'program/flashcard.html', context)
+    # current_user = request.user
+    # service = VocabularyProgramService(program_id, current_user.id)
+    # service.enroll()
+    # flashcard = service.get_flash_card()
+    return redirect('program:dashboard', program_id=program_id)
 
 
 def dashboard(request, program_id):
@@ -38,7 +35,7 @@ def dashboard(request, program_id):
         'flashcard': flashcard,
         'current_progress': current_progress
     }
-    return render(request, 'program/vocabulary_program/dashboard.html', context)
+    return render(request, 'program/dashboard.html', context)
 
 
 def new_flashcard(request, program_id):

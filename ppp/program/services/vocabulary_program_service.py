@@ -112,6 +112,11 @@ class VocabularyProgramService():
                     (Q(understandings__score__gt=0) & Q(understandings__score__lt=5)) & Q(
                 understandings__vocabulary__vocab_program=self.program)))
         mem = Member.objects.filter(pk=self.member.pk).annotate(reviewing=reviewing).annotate(learned=learned)
+        learned = mem[0].learned
+        reviewing = mem[0].reviewing
         total = self.program.vocabularies.count()
-        progress = {'learned': mem[0].learned, 'reviewing': mem[0].reviewing, 'total': total}
+
+        percentage = (learned / total) * 100
+
+        progress = {'learned': learned, 'reviewing': reviewing, 'total': total, 'percentage': percentage}
         return progress
