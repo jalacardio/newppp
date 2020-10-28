@@ -5,27 +5,8 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'program/css/dashboard.css' %}">
 <div class="container">
-    <h3>{{ program.alias }}</h3>
-    <div class="card mb-5">
-        <div class="card-body">
-            <div class="row">
-                <div>
-                    <h4>
-                        Overall Progress
-                    </h4>
-                    <span>
-                         {{ current_progress.percentage|floatformat:"0" }} %
-                    </span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="chart-container">
-                    <canvas id="progressDonut"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
+    <h3 class="mb-3">{{ program.alias }}</h3>
+    <div class="card mb-3">
         <div class="card-body">
         {% if flashcard %}
             <h4>Flashcard</h4>
@@ -42,6 +23,38 @@
         {% endif %}
         </div>
     </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div>
+                            <h4>
+                                Overall Progress
+                            </h4>
+                            <span>
+                                 {{ current_progress.percentage|floatformat:"0" }} %
+                            </span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="chart-container">
+                            <canvas id="progressDonut"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="recent-learned">
+                {% for understanding in recent_learned_vocab_understandings %}
+                    <p>{{ understanding.vocabulary.word.rep }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
 
 </div>
 

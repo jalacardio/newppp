@@ -1,4 +1,5 @@
-from django.db.models import Max
+from django.db.models import Max, Q, Prefetch
+from django.utils import timezone
 import random
 from program.models import VocabularyProgram, FlashCard, Vocabulary, ProgramEnrollment, VocabularyUnderstanding
 from dictionary.models import Word
@@ -75,6 +76,14 @@ class VocabularyProgramService():
         vu = VocabularyUnderstanding.objects.get(member=self.member, vocabulary__id=vocab_id)
         return vu
 
+    def get_recent_mastered_vocabulary(self, vocab_count):
+        learned = (Q(score__gt=4) & Q(vocabulary__vocab_program=self.program))
+        mem = Member.objects.prefetch_related(
+                Prefetch('understandings', queryset=VocabularyUnderstanding.objects.filter(learned))
+                ).get(pk=self.member.pk)
+        vocab_learned = mem.understandings.order_by('-mastered_at').all()
+        return vocab_learned
+
     def update_vocabulary_understanding(self, vocab_id, score):
         vu = VocabularyUnderstanding.objects.get(member=self.member, vocabulary__id=vocab_id)
         if score == 'up':
@@ -90,6 +99,9 @@ class VocabularyProgramService():
 
         # Update score only when it's in rational range, 1 is identified as "New Word", 5 is identified as "Learned"
         if 1 <= vu.score < 6:
+            # Set understanding as master when score is greater than 5
+            if vu.score >= 5 and not vu.mastered_at:
+                vu.mastered_at = timezone.now()
             vu.save()
             self.update_flashcard_progress()
 

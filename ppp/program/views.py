@@ -30,10 +30,12 @@ def dashboard(request, program_id):
     service.enroll()
     flashcard = service.get_flash_card()
     current_progress = service.overall_progress()
+    recent_learned_vocab_understandings = service.get_recent_mastered_vocabulary(10)
     context = {
         'program': service.program,
         'flashcard': flashcard,
-        'current_progress': current_progress
+        'current_progress': current_progress,
+        'recent_learned_vocab_understandings': recent_learned_vocab_understandings
     }
     return render(request, 'program/dashboard.html', context)
 

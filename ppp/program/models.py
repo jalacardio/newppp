@@ -44,9 +44,10 @@ class VocabularyUnderstanding(models.Model):
     score = models.IntegerField(default=0)
     member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='understandings')
     vocabulary = models.ForeignKey(Vocabulary, on_delete=models.CASCADE, related_name='understandings')
+    mastered_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return "Member:{} - Program:{} - {} : {}".format(self.member.pk, self.vocabulary.vocab_program.pk, self.vocabulary.word.rep, self.score)
+        return "Member:{} - Program:{} - {} : {} - {}".format(self.member.pk, self.vocabulary.vocab_program.pk, self.vocabulary.word.rep, self.score, self.mastered_at)
 
 
 class FlashCard(models.Model):
