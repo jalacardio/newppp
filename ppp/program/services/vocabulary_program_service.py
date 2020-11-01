@@ -76,12 +76,12 @@ class VocabularyProgramService():
         vu = VocabularyUnderstanding.objects.get(member=self.member, vocabulary__id=vocab_id)
         return vu
 
-    def get_recent_mastered_vocabulary(self, vocab_count):
+    def get_recent_mastered_vocabulary(self, vocab_count=10):
         learned = (Q(score__gt=4) & Q(vocabulary__vocab_program=self.program))
         mem = Member.objects.prefetch_related(
                 Prefetch('understandings', queryset=VocabularyUnderstanding.objects.filter(learned))
                 ).get(pk=self.member.pk)
-        vocab_learned = mem.understandings.order_by('-mastered_at').all()
+        vocab_learned = mem.understandings.order_by('-mastered_at')[:vocab_count]
         return vocab_learned
 
     def update_vocabulary_understanding(self, vocab_id, score):

@@ -7,36 +7,52 @@
 <div class="container">
     <h3 class="mb-3">{{ program.alias }}</h3>
     <div class="card mb-3">
+        <div class="card-header">
+            Flashcard
+        </div>
         <div class="card-body">
-        {% if flashcard %}
-            <h4>Flashcard</h4>
-            <div class="progress mb-3">
-                <div class="progress-bar bg-success" role="progressbar" style="width: {{ flashcard.progress }}%" aria-valuenow="{{ flashcard.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+            {% if flashcard %}
+            <div>
+                <h4>You have learned {{ current_progress.learned }} new vocabs!</h4>
             </div>
-            <a href="{%url 'program:flashcard' program_id=program.id %}">
-                <button type="button" class="btn btn-outline-secondary btn-lg btn-block">Continue</button>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ flashcard.progress }}%"
+                     aria-valuenow="{{ flashcard.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <a class="btn btn-outline-secondary btn-lg btn-block"
+               href="{%url 'program:flashcard' program_id=program.id %}">
+                Continue
             </a>
-        {% else %}
-            <a href="{%url 'program:flashcard' program_id=program.id %}">
-                <button type="button" class="btn btn-outline-secondary btn-lg btn-block">Create</button>
+            {% else %}
+            <a class="btn btn-outline-secondary btn-lg btn-block"
+               href="{%url 'program:flashcard' program_id=program.id %}">
+                Create
             </a>
-        {% endif %}
+            {% endif %}
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-5">
+        <div class="col-12">
+        <div class="recent">
+            <div>
+                <h4>Recent Vocabularies</h4>
+            </div>
+            <div class="recent-vocab">
+                {% for understanding in recent_learned_vocab_understandings %}
+                <button type="button" class="btn vocab-flipper">{{ understanding.vocabulary.word.rep }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+    </div>
+    <div class="row mt-5">
         <div class="col-6">
-            <div class="card">
+            <div>
+                <h4>Overall Progress</h4>
+            </div>
+            <div class="progress-chart">
+                <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <div>
-                            <h4>
-                                Overall Progress
-                            </h4>
-                            <span>
-                                 {{ current_progress.percentage|floatformat:"0" }} %
-                            </span>
-                        </div>
-                    </div>
                     <div class="row">
                         <div class="chart-container">
                             <canvas id="progressDonut"></canvas>
@@ -45,15 +61,11 @@
                 </div>
             </div>
         </div>
+        </div>
         <div class="col-6">
-            <div class="recent-learned">
-                {% for understanding in recent_learned_vocab_understandings %}
-                    <p>{{ understanding.vocabulary.word.rep }}</p>
-                {% endfor %}
-            </div>
+            <h4>asd</h4>
         </div>
     </div>
-
 
 
 </div>
@@ -68,6 +80,8 @@
     var data = [learned, reviewing, total - (learned + reviewing)]
     var id = "progressDonut"
     loadPieChart(id, labels, data)
+
+
 
 
 </script>

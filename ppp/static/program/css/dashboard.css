@@ -6,3 +6,17 @@
 .overall-progress span{
     font-size: 14px;
 }
+
+.recent-vocab{
+    width: 100%;
+}
+.vocab-flipper{
+    margin-right: 5px;
+    margin-bottom: 10px;
+    background-color: #fff4ed;
+}
+
+.vocab-flipper:hover{
+    background-color: #ffe2d1;
+}
+
