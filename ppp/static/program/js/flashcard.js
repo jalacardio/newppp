@@ -1,12 +1,6 @@
-
-class Hero {
-    constructor(name, level) {
-        this.name = name;
-        this.level = level;
-    }
-
-    // Adding a method to the constructor
-    greet() {
-        return `${this.name} says hello.`;
-    }
+function unblur(){
+  var flashcard = document.getElementById("flashcard");
+  flashcard.classList.remove("blur");
+  var vocab = document.getElementById("flashcard-vocab");
+  vocab.style.display = "none";
 }
