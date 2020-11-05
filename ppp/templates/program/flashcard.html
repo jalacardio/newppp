@@ -24,26 +24,26 @@
             <div class="card-body">
                 <div class="translation">
                     <h1>{{ vocabulary.word.rep }}</h1>
-                {% for translation in vocab_translation.all %}
-                <div>
-                    {% if not translation.category %}
-                    <h5>
-                        {% for speech in translation.speeches.all %}
-                        <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>
-                        {% endfor %}
-                    </h5>
+                    {% for translation in vocab_translation.all %}
+                    <div>
+                        {% if not translation.category %}
+                        <h5>
+                            {% for speech in translation.speeches.all %}
+                            <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>
+                            {% endfor %}
+                        </h5>
 
-                    <p>{{ translation.rep }}</p>
-                    {% elif vocab_translation.all.count == 1 %}
-                    <h5>
-                        <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>
-                    </h5>
+                        <p>{{ translation.rep }}</p>
+                        {% elif vocab_translation.all.count == 1 %}
+                        <h5>
+                            <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>
+                        </h5>
 
-                    <p>{{ translation.rep }}</p>
-                    {% endif %}
+                        <p>{{ translation.rep }}</p>
+                        {% endif %}
 
-                </div>
-                {% endfor %}
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -53,14 +53,15 @@
         {% endif %}
 
         <div id="flashcard-vocab" class="vocab">
-          <h1>{{ vocabulary.word.rep }}</h1>
-          {% if understanding.score >= 5 %}
+            <h1>{{ vocabulary.word.rep }}</h1>
+            {% if understanding.score >= 5 %}
             <span class="badge badge-pill badge-success">Learned</span>
             {% elif understanding.score > 0 %}
             <span class="badge badge-pill badge-warning">Reviewing</span>
             {% else %}
             <span class="badge badge-pill badge-light">New Word</span>
             {% endif %}
+            <p class="mt-3">Click to reveal the answer</p>
         </div>
     </div>
 
