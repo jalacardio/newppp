@@ -19,41 +19,60 @@
     </div>
     <div class="flashcard mt-5" onclick="unblur()">
 
-        {% if vocab_translation %}
-        <div id="flashcard" class="card box-content blur">
-            <div class="card-body">
-                <div class="translation">
-                    <h1>{{ vocabulary.word.rep }}</h1>
-                    {% for translation in vocab_translation.all %}
-                    <div>
-                        {% if not translation.category %}
-                        <h5>
-                            {% for speech in translation.speeches.all %}
-                            <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>
-                            {% endfor %}
-                        </h5>
+<!--        {% if vocab_translation %}-->
+<!--        <div id="flashcard" class="card box-content blur">-->
+<!--            <div class="card-body">-->
+<!--                <div class="translation">-->
+<!--                    <h1>{{ vocabulary.word.rep }}</h1>-->
+<!--                    {% with translation=vocab_translation.first %}-->
+<!--                    <div>-->
+<!--                        {% if not translation.category %}-->
+<!--                        <h5>-->
+<!--                            {% for speech in translation.speeches.all %}-->
+<!--                            <span class="badge badge-pill badge-info lb-lg">{{ speech.rep }}</span>-->
+<!--                            {% endfor %}-->
+<!--                        </h5>-->
 
-                        <p>{{ translation.rep }}</p>
-                        {% elif vocab_translation.all.count == 1 %}
-                        <h5>
-                            <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>
-                        </h5>
+<!--                        <p>{{ translation.rep }}</p>-->
+<!--                        {% elif vocab_translation.all.count == 1 %}-->
+<!--                        <h5>-->
+<!--                            <span class="badge badge-pill badge-warning lb-lg">{{ translation.category }}</span>-->
+<!--                        </h5>-->
 
-                        <p>{{ translation.rep }}</p>
-                        {% endif %}
+<!--                        <p>{{ translation.rep }}</p>-->
+<!--                        {% endif %}-->
+<!--                    {% endwith %}-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+            {% if vocab_translation %}
+            <div id="flashcard" class="card box-content blur">
+                <div class="card-body">
+                    <div class="translation">
+                        <h1>{{ vocabulary.rep }}</h1>
+                        {% with translation=vocab_translation %}
+                        <div>
+                            <h5>
+                                {% if translation.speech %}
+                                <span class="badge badge-pill badge-info lb-lg">{{ translation.speech }}</span>
+                                {% endif %}
+                            </h5>
 
+                            <p>{{ translation.rep }}</p>
+                        {% endwith %}
+                        </div>
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-        </div>
+            {% endif %}
 
         {% else %}
         <p>No words are available.</p>
         {% endif %}
 
         <div id="flashcard-vocab" class="vocab">
-            <h1>{{ vocabulary.word.rep }}</h1>
+            <h1>{{ vocabulary.rep }}</h1>
             {% if understanding.score >= 5 %}
             <span class="badge badge-pill badge-success">Learned</span>
             {% elif understanding.score > 0 %}

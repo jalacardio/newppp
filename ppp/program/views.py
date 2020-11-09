@@ -59,7 +59,7 @@ def flashcard(request, program_id):
         'flashcard': flash_card,
         'vocabulary': vocab,
         'understanding': understanding,
-        'vocab_translation': vocab.word.translations,
+        'vocab_translation': vocab.translation,
         'program': service.program
     }
     return render(request, 'program/flashcard.html', context)

@@ -61,9 +61,10 @@ class VocabularyProgramService():
         return rand_vocab_list
 
     def get_vocabulary_from_flashcard(self, flashcard_id):
-        fc = FlashCard.objects.prefetch_related('vocabularies', 'vocabularies__word',
-                                                'vocabularies__word__translations', 'vocabularies__word__phonetic',
-                                                'vocabularies__word__translations__speeches').get(pk=flashcard_id)
+        # fc = FlashCard.objects.prefetch_related('vocabularies', 'vocabularies__word',
+        #                                         'vocabularies__word__translations', 'vocabularies__word__phonetic',
+        #                                         'vocabularies__word__translations__speeches').get(pk=flashcard_id)
+        fc = FlashCard.objects.prefetch_related('vocabularies', 'vocabularies__translation').get(pk=flashcard_id)
         vocab_list = list(fc.vocabularies.all())
         random.shuffle(vocab_list)
         vocab = vocab_list[0]
