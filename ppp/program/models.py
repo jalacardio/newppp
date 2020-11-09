@@ -3,14 +3,14 @@ from member.models import Member
 from dictionary.models import Word
 from django.contrib import admin
 
-
-class VocabularyBank(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
-    alias = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
+#
+# class VocabularyBank(models.Model):
+#     name = models.CharField(max_length=255, null=True, blank=True)
+#     alias = models.CharField(max_length=255, null=True, blank=True)
+#     description = models.TextField(null=True, blank=True)
+#
+#     def __str__(self):
+#         return "{}".format(self.name)
 
 
 class VocabularyProgram(models.Model):
@@ -31,13 +31,18 @@ class ProgramEnrollment(models.Model):
 
 
 class Vocabulary(models.Model):
-    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='vocabularies')
-    bank = models.ForeignKey(VocabularyBank, on_delete=models.CASCADE, related_name='vocabularies')
-    vocab_program = models.ForeignKey(VocabularyProgram, on_delete=models.SET_NULL, null=True, blank=True,
+    rep = models.CharField(max_length=200)
+    vocab_program = models.ForeignKey(VocabularyProgram, on_delete=models.CASCADE, null=True, blank=True,
                                       related_name='vocabularies')
 
     def __str__(self):
-        return "{} - {}".format(self.bank.name, self.word.rep)
+        return "{} - {}".format(self.vocab_program.name, self.rep)
+
+
+class VocabularyTranslation(models.Model):
+    rep = models.CharField(max_length=1500)
+    speech = models.CharField(max_length=50, null=True, blank=True)
+    vocabulary = models.OneToOneField(Vocabulary, on_delete=models.CASCADE, related_name='translation')
 
 
 class VocabularyUnderstanding(models.Model):
@@ -47,7 +52,7 @@ class VocabularyUnderstanding(models.Model):
     mastered_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return "Member:{} - Program:{} - {} : {} - {}".format(self.member.pk, self.vocabulary.vocab_program.pk, self.vocabulary.word.rep, self.score, self.mastered_at)
+        return "Member:{} - Program:{} - {} : {} - {}".format(self.member.pk, self.vocabulary.vocab_program.pk, self.vocabulary.rep, self.score, self.mastered_at)
 
 
 class FlashCard(models.Model):
