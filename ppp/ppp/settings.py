@@ -135,3 +135,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+
+# Unsplash API
+UNSPLASH_ACCESS_KEY = "y2QdUqyC2G9nRTotAvGaydRxiB0TqkTfg1Qj1eLnU_0"
+UNSPLASH_PHOTO_SEARCH_URL = "https://api.unsplash.com/search/photos"
