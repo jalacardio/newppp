@@ -4,8 +4,8 @@ import random
 
 # value = random()
 
-name = "toefl"
-program_name = "Toefl"
+name = "toefl2"
+program_name = "Toefl2"
 
 vp = VocabularyProgram.objects.create(name=program_name)
 
