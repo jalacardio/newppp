@@ -4,6 +4,7 @@ from django.db.models.functions import Length
 
 from program.models import VocabularyProgram
 from program.services.vocabulary_program_service import VocabularyProgramService
+from program.services.unsplash_service import UnsplashService
 from member.models import Member
 
 
@@ -55,12 +56,16 @@ def flashcard(request, program_id):
     service = VocabularyProgramService(program_id, current_user.id)
     flash_card = service.get_flash_card()
     vocab, understanding = service.get_vocabulary_from_flashcard(flash_card.id)
+    unsplash = UnsplashService()
+    images = unsplash.search_query(vocab.rep, quality="small")
+    print(images)
     context = {
         'flashcard': flash_card,
         'vocabulary': vocab,
         'understanding': understanding,
         'vocab_translation': vocab.translation,
-        'program': service.program
+        'program': service.program,
+        'images': images
     }
     return render(request, 'program/flashcard.html', context)
 
