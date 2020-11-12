@@ -16,6 +16,16 @@
       transform: translate(-50%, -50%);
 }
 
+.flashcard .relative-images{
+    height: 300px;
+    width: 80%;
+}
+
+.flashcard .relative-images .thumbs{
+    overflow-y: auto;
+    height: 300px;
+}
+
 .flashcard .vocab {
   background-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 8px 8px white;

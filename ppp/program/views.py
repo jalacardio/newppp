@@ -58,7 +58,6 @@ def flashcard(request, program_id):
     vocab, understanding = service.get_vocabulary_from_flashcard(flash_card.id)
     unsplash = UnsplashService()
     images = unsplash.search_query(vocab.rep, quality="small")
-    print(images)
     context = {
         'flashcard': flash_card,
         'vocabulary': vocab,

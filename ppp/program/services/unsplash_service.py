@@ -16,7 +16,10 @@ class UnsplashService():
         res = []
 
         for item in data['results']:
-            img = item['urls'][quality]
+            img = dict()
+            img['url'] = item['urls'][quality]
+            img['thumb'] = item['urls']['thumb']
+            img['alt'] = item['alt_description']
             res.append(img)
 
         return res
